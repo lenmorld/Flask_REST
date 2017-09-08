@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask, request
 from flask_restful import Resource, Api
 
 app = Flask(__name__)
@@ -15,13 +15,13 @@ class Item(Resource):
                 return item                     # flask_restful does the JSONify for us
         return {'item': None}, 404              # not found
 
-
     # def get(self):
     #     return items
 
-
     def post(self, name):
-        item = {'name': name, 'price': 12.00}
+        data = request.get_json()           # if request has JSON payload, if not or wrong content-type error
+        # request.get_json(force=True, silent=True)     # not good
+        item = {'name': name, 'price': data['price']}
         items.append(item)
         return item, 201                        # 201 Created
 
