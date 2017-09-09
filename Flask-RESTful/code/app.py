@@ -10,15 +10,14 @@ items = []
 
 class Item(Resource):
     def get(self, name):
-        for item in items:
-            if item['name'] == name:
-                return item                     # flask_restful does the JSONify for us
-        return {'item': None}, 404              # not found
+        item = next(filter(lambda x: x['name'] == name, items), None)     # call next to find the one item, else None
 
-    # def get(self):
-    #     return items
+        return {'item': item}, 200 if item else 404
 
     def post(self, name):
+        if next(filter(lambda x: x['name'] == name, items), None):
+            return {'message': 'An item with name "{}" already exists'.format(name)}, 400           # Bad request
+
         data = request.get_json()           # if request has JSON payload, if not or wrong content-type error
         # request.get_json(force=True, silent=True)     # not good
         item = {'name': name, 'price': data['price']}
